@@ -1,5 +1,5 @@
 import { QuotationStatus } from '../enums';
-import { Customer } from './customer';
+import { ICustomer } from './customer';
 
 export interface QuotationItem {
   id: string;
@@ -15,7 +15,7 @@ export interface QuotationItem {
 export interface Quotation {
   id: string;
   customerId?: string;
-  customer?: Customer | {
+  customer?: ICustomer | {
     name: string;
     email: string;
     phone: string;
@@ -43,4 +43,41 @@ export interface Quotation {
     unitPrice: number;
     tax: number;
   };
+}
+
+// Quotation service interfaces
+export interface ICreateQuotationService {
+  userId: string;
+  title: string;
+  description?: string;
+  salesman?: string;
+  validUntil: Date;
+  items: Array<{
+    productId: string;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    specifications?: string;
+  }>;
+  notes?: string;
+}
+
+export interface IUpdateQuotationService {
+  title?: string;
+  description?: string;
+  salesman?: string;
+  status?: QuotationStatus;
+  validUntil?: Date;
+  notes?: string;
+}
+
+export interface IQuotationFilterService {
+  status?: QuotationStatus;
+  userId?: string;
+  salesman?: string;
+  dateFrom?: Date;
+  dateTo?: Date;
+  minAmount?: number;
+  maxAmount?: number;
+  search?: string;
 }

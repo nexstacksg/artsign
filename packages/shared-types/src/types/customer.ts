@@ -1,32 +1,55 @@
-import { CustomerType, CustomerStatus, PaymentStatus, OrderStatus, PaymentTerms } from '../enums';
+import { CustomerType, CustomerStatus, PaymentTerms } from '../enums';
 
-export interface Customer {
+export interface ICustomer {
   id: string;
-  name: string;
-  email: string;
-  contactPerson: string;
-  salesman: string;
-  type: CustomerType;
-  orders: number;
+  userId: string;
+  companyName?: string | null;
+  taxId?: string | null;
+  customerType: CustomerType;
+  creditLimit: number;
+  creditUsed: number;
   totalSpent: number;
-  status: CustomerStatus;
-  address?: string;
-  phone?: string;
-  createdAt: string;
+  paymentTerms: PaymentTerms;
+  contactPerson?: string | null;
+  salesman?: string | null;
+  customerStatus: CustomerStatus;
+  notes?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ICreateCustomer {
+  userId: string;
+  companyName?: string;
+  taxId?: string;
+  customerType?: CustomerType;
   creditLimit?: number;
-  creditUsed?: number;
   paymentTerms?: PaymentTerms;
+  contactPerson?: string;
+  salesman?: string;
   notes?: string;
 }
 
-export interface CustomerFilterOptions {
-  status: CustomerStatus | "All";
-  type: CustomerType | "All";
-  minSpent?: number;
-  maxSpent?: number;
-  dateFrom?: string;
-  dateTo?: string;
-  customer?: string;
-  paymentStatus?: PaymentStatus;
-  orderStatus?: OrderStatus;
+export interface IUpdateCustomer {
+  companyName?: string;
+  taxId?: string;
+  customerType?: CustomerType;
+  creditLimit?: number;
+  creditUsed?: number;
+  totalSpent?: number;
+  paymentTerms?: PaymentTerms;
+  contactPerson?: string;
+  salesman?: string;
+  customerStatus?: CustomerStatus;
+  notes?: string;
+}
+
+export interface ICustomerFilter {
+  customerStatus?: CustomerStatus;
+  customerType?: CustomerType;
+  minCreditLimit?: number;
+  maxCreditLimit?: number;
+  minTotalSpent?: number;
+  maxTotalSpent?: number;
+  salesman?: string;
 }

@@ -4,17 +4,24 @@ export interface IUser {
   id: string;
   email: string;
   password: string;
-  firstName?: string | null;
-  lastName?: string | null;
-  profilePhoto?: string | null;
+  firstName: string;
+  lastName: string;
+  phone?: string | null;
   role: UserRole;
   status: UserStatus;
-  emailVerified: boolean;
+  refreshToken?: string | null;
+  lastLoginAt?: Date | null;
   emailVerificationToken?: string | null;
-  emailVerificationExpiry?: Date | null;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiry?: Date | null;
-  lastLogin?: Date | null;
+  emailVerifiedAt?: Date | null;
+  passwordResetToken?: string | null;
+  passwordResetExpires?: Date | null;
+  // Profile fields
+  about?: string | null;
+  dateOfBirth?: Date | null;
+  gender?: string | null;
+  imageUrl?: string | null;
+  language?: string | null;
+  currency?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,12 +29,13 @@ export interface IUser {
 export interface IUserPublic {
   id: string;
   email: string;
-  firstName: string | null;
-  lastName: string | null;
-  profilePhoto: string | null;
+  firstName: string;
+  lastName: string;
+  phone?: string | null;
+  imageUrl?: string | null;
   role: UserRole;
   status: UserStatus;
-  emailVerified: boolean;
+  emailVerifiedAt?: Date | null;
   createdAt: Date;
 }
 
@@ -36,21 +44,29 @@ export interface IUserAuth {
   email: string;
   role: UserRole;
   status: UserStatus;
-  emailVerified: boolean;
+  emailVerifiedAt?: Date | null;
 }
 
 export interface ICreateUser {
   email: string;
   password: string;
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  role?: UserRole;
 }
 
 export interface IUpdateUser {
   email?: string;
   firstName?: string;
   lastName?: string;
-  profilePhoto?: string;
+  phone?: string;
+  about?: string;
+  dateOfBirth?: Date;
+  gender?: string;
+  imageUrl?: string;
+  language?: string;
+  currency?: string;
 }
 
 export interface IUserLogin {

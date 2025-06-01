@@ -1,8 +1,8 @@
-// Define enums as constants since SQLite doesn't support native enums
+// EXISTING AUTH SYSTEM - DO NOT CHANGE
 export const UserRole = {
-  SUPER_ADMIN: "SUPER_ADMIN",
-  MANAGER: "MANAGER",
   USER: "USER",
+  MANAGER: "MANAGER",
+  SUPER_ADMIN: "SUPER_ADMIN",
 } as const;
 
 export const UserStatus = {
@@ -80,6 +80,40 @@ export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus];
 export type PaymentTerms = (typeof PaymentTerms)[keyof typeof PaymentTerms];
 export type RefundStatus = (typeof RefundStatus)[keyof typeof RefundStatus];
 export type QuotationStatus = (typeof QuotationStatus)[keyof typeof QuotationStatus];
+
+// Product related enums
+export const ProductCategory = {
+  FLYERS: "FLYERS",
+  BUSINESS_CARDS: "BUSINESS_CARDS",
+  BANNERS: "BANNERS",
+  CUSTOM: "CUSTOM",
+  POSTERS: "POSTERS",
+  STICKERS: "STICKERS",
+  LABELS: "LABELS",
+  BROCHURES: "BROCHURES",
+  ENVELOPES: "ENVELOPES",
+  SIGNAGE: "SIGNAGE",
+  WRAPS: "WRAPS",
+  MAGNETS: "MAGNETS",
+} as const;
+
+export const ProductStatus = {
+  IN_STOCK: "IN_STOCK",
+  LOW_STOCK: "LOW_STOCK",
+  OUT_OF_STOCK: "OUT_OF_STOCK",
+  DISCONTINUED: "DISCONTINUED",
+} as const;
+
+export const PricingModel = {
+  MULTI_FACTOR: "MULTI_FACTOR",
+  QUANTITY_BASED: "QUANTITY_BASED",
+  AREA_BASED: "AREA_BASED",
+  CUSTOM: "CUSTOM",
+} as const;
+
+export type ProductCategory = (typeof ProductCategory)[keyof typeof ProductCategory];
+export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus];
+export type PricingModel = (typeof PricingModel)[keyof typeof PricingModel];
 
 // Custom enums not in Prisma
 export enum ErrorCode {

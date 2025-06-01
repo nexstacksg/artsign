@@ -10,6 +10,10 @@ export * from './types/invoice';
 export * from './types/product';
 export * from './types/quotation';
 export * from './types/refund';
+export * from './types/analytics';
 
 // Export all models
 export * from './models/user';
+
+// Export utilities
+export * from './utils/compatibility';

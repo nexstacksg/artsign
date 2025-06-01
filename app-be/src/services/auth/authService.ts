@@ -35,10 +35,10 @@ export class AuthService {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      profilePhoto: user.profilePhoto || null,
+      imageUrl: user.imageUrl || null,
       role: user.role as UserRole,
       status: user.status,
-      emailVerified: !!user.emailVerifiedAt,
+      emailVerifiedAt: user.emailVerifiedAt,
       createdAt: user.createdAt,
     };
   }
