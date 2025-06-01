@@ -15,6 +15,72 @@ export const UserStatus = {
 export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
 
+// Customer related enums
+export const CustomerType = {
+  INDIVIDUAL: "INDIVIDUAL",
+  CORPORATE: "CORPORATE",
+} as const;
+
+export const CustomerStatus = {
+  ACTIVE: "ACTIVE",
+  INACTIVE: "INACTIVE",
+} as const;
+
+export const InvoiceStatus = {
+  PAID: "PAID",
+  UNPAID: "UNPAID",
+  OVERDUE: "OVERDUE",
+} as const;
+
+export const OrderStatus = {
+  COMPLETED: "COMPLETED",
+  PROCESSING: "PROCESSING",
+  CANCELLED: "CANCELLED",
+  PENDING_PAYMENT: "PENDING_PAYMENT",
+  IN_PROGRESS: "IN_PROGRESS",
+  ASSIGNED: "ASSIGNED",
+} as const;
+
+export const PaymentStatus = {
+  PAID: "PAID",
+  UNPAID: "UNPAID",
+  OVERDUE: "OVERDUE",
+  PENDING: "PENDING",
+  PARTIAL: "PARTIAL",
+} as const;
+
+export const PaymentTerms = {
+  IMMEDIATE: "IMMEDIATE",
+  NET_30: "NET_30",
+  NET_60: "NET_60",
+} as const;
+
+export const RefundStatus = {
+  PENDING: "PENDING",
+  APPROVED: "APPROVED",
+  REJECTED: "REJECTED",
+  PROCESSED: "PROCESSED",
+} as const;
+
+export const QuotationStatus = {
+  PENDING: "PENDING",
+  APPROVED: "APPROVED",
+  REJECTED: "REJECTED",
+  DRAFT: "DRAFT",
+  SENT: "SENT",
+  ACCEPTED: "ACCEPTED",
+  EXPIRED: "EXPIRED",
+} as const;
+
+export type CustomerType = (typeof CustomerType)[keyof typeof CustomerType];
+export type CustomerStatus = (typeof CustomerStatus)[keyof typeof CustomerStatus];
+export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus];
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus];
+export type PaymentTerms = (typeof PaymentTerms)[keyof typeof PaymentTerms];
+export type RefundStatus = (typeof RefundStatus)[keyof typeof RefundStatus];
+export type QuotationStatus = (typeof QuotationStatus)[keyof typeof QuotationStatus];
+
 // Custom enums not in Prisma
 export enum ErrorCode {
   // Auth errors
