@@ -1,158 +1,346 @@
-## Project Overview
+# ArtSign - Project Overview
 
-App Template is a modern full-stack application template that provides a solid foundation for building web and mobile applications with user authentication, profile management, and role-based access control.
+## 🎯 Executive Summary
 
-## Core User Personas
+ArtSign is a comprehensive custom manufacturing order management system designed to revolutionize how signage and printing businesses operate. The platform streamlines the entire order lifecycle from quotation to delivery, connecting customers, business owners, and contractors in a seamless digital ecosystem.
 
-### 1. **Standard User** (Web + Mobile)
+### Vision
 
-**Role**: General application user
-**Primary Device**: Web browser or mobile app
-**Key Needs**: Access to application features and personal profile management
+To become the leading digital platform for custom manufacturing businesses, enabling 10x growth without proportional staffing increases.
 
-**User Journey:**
-- **Registration**: Create account with email and password
-- **Email Verification**: Verify email address to activate account
-- **Profile Setup**: Complete profile with name and optional profile photo
-- **Daily Usage**: Access application features based on user permissions
-- **Profile Management**: Update personal information and settings
+### Mission
 
-### 2. **Manager** (Web + Mobile)
+Automate complex business processes while maintaining quality control and customer satisfaction through intelligent workflow management.
 
-**Role**: Application manager with elevated permissions
-**Primary Device**: Web dashboard with mobile access
-**Key Needs**: User management and oversight capabilities
+## 🏗️ System Architecture
 
-**Manager Journey:**
-- **User Oversight**: View and manage user accounts
-- **Role Management**: Assign and modify user roles
-- **Monitoring**: Track user activity and system usage
-- **Administration**: Handle user-related tasks and approvals
+### Application Structure
 
-### 3. **Super Admin** (Web Dashboard)
+```
+ArtSign Platform
+├── Frontend Applications
+│   ├── app-web (Customer E-commerce Portal)
+│   ├── app-admin (Administrative Dashboard)
+│   └── app-mobile (Mobile App - Future)
+├── Backend Services
+│   └── app-be (Express.js API)
+├── Shared Resources
+│   └── packages/shared-types (TypeScript Definitions)
+└── Legacy Systems (To be migrated)
+    ├── artSign-admin
+    └── artSign-customer
+```
 
-**Role**: Platform administrator with full system access
-**Primary Device**: Web dashboard
-**Key Needs**: Complete platform control and system administration
+### Technology Stack
 
-**Admin Journey:**
-- **System Administration**: Full platform management capabilities
-- **User Management**: Create, modify, and manage all user accounts
-- **Platform Oversight**: Monitor system health and performance
-- **Configuration**: Manage application settings and configurations
+| Layer              | Technology                   | Purpose                  |
+| ------------------ | ---------------------------- | ------------------------ |
+| **Frontend**       | Next.js 15.x, React 19.x     | Web applications         |
+| **Backend**        | Express.js 4.x, Node.js 20.x | API services             |
+| **Database**       | PostgreSQL 15.x              | Primary data store       |
+| **Cache**          | Redis 7.x                    | Performance optimization |
+| **ORM**            | Prisma                       | Database abstraction     |
+| **Authentication** | JWT                          | Secure access control    |
+| **Real-time**      | Socket.io                    | Live updates             |
+| **File Storage**   | AWS S3                       | Document/image storage   |
 
-## User Story Scenarios
+## 👥 User Personas
 
-### Scenario 1: New User Registration
+### 1. Customer Organization
 
-**Characters**: New User (Sarah), Manager (John), Super Admin (Alex)
+#### Customer Admin
 
-1. **Sarah** visits the application and clicks "Sign Up"
-2. Enters email, password, and basic information
-3. Receives email verification link
-4. Clicks verification link to activate account
-5. **John** (if applicable) reviews new user registration
-6. **Sarah** completes profile setup with additional information
+- **Access**: Full company account control
+- **Responsibilities**: User management, financial oversight, strategic ordering
+- **Key Features**: Department management, credit limit control, reporting
 
-### Scenario 2: User Profile Management
+#### Department User
 
-1. **Sarah** logs into the application
-2. Navigates to profile settings
-3. Updates personal information (name, profile photo)
-4. Changes password for security
-5. Manages notification preferences
+- **Access**: Department-specific orders
+- **Responsibilities**: Create quotations, place orders, track deliveries
+- **Key Features**: Order creation, status tracking, communication
 
-### Scenario 3: Password Reset Flow
+#### Viewer
 
-1. **Sarah** forgets password and clicks "Forgot Password"
-2. Enters email address
-3. Receives password reset email
-4. Clicks reset link and creates new password
-5. Successfully logs in with new credentials
+- **Access**: Read-only
+- **Responsibilities**: Monitor order status, view reports
+- **Key Features**: Dashboard viewing, report access
 
-### Scenario 4: Role-Based Access
+### 2. Internal Team
 
-1. **John** (Manager) logs in and accesses manager dashboard
-2. Views user management features unavailable to standard users
-3. **Alex** (Super Admin) accesses advanced system administration
-4. Manages user roles and system settings
+#### Super Admin (Eric - Business Owner)
 
-## Key Features
+- **Access**: Complete system control
+- **Responsibilities**: Strategic decisions, pricing management, contractor oversight
+- **Key Features**: All system features, configuration management
 
-### Authentication System
-- Email/password registration and login
-- Email verification workflow
-- Password reset functionality
-- JWT token-based authentication
-- Secure session management
+#### Admin Staff
 
-### User Management
-- User profile creation and editing
-- Profile photo upload
-- Role-based access control (User, Manager, Super Admin)
-- Account status management (Active, Inactive, Suspended, Pending Verification)
+- **Access**: Operational management
+- **Responsibilities**: Order processing, quality control, customer support
+- **Key Features**: Order management, contractor assignment, quality review
 
-### Security Features
-- Password hashing and encryption
-- JWT token authentication
-- Role-based authorization
-- Input validation and sanitization
-- Rate limiting and security headers
+### 3. Contractors
 
-## Success Metrics
+#### Lead Contractor
 
-### User Experience
-- Registration completion rate: >95%
-- Email verification rate: >90%
-- User satisfaction with auth flow: >4.5/5
-- Password reset success rate: >98%
+- **Access**: Job management and delegation
+- **Responsibilities**: Accept jobs, manage sub-contractors, submit completion evidence
+- **Key Features**: Job dashboard, sub-job assignment, invoice submission
+
+#### Standard Contractor
+
+- **Access**: Assigned jobs only
+- **Responsibilities**: Execute assigned work, submit completion evidence
+- **Key Features**: Job view, evidence upload, status updates
+
+## 🔄 Core Workflows
+
+### 1. Quotation Workflow
+
+```mermaid
+graph LR
+    A[Customer Request] --> B[System Calculation]
+    B --> C[Admin Review]
+    C --> D{Approved?}
+    D -->|Yes| E[Customer Notification]
+    D -->|No| F[Modification Request]
+    E --> G[Order Placement]
+    F --> A
+```
+
+### 2. Order Fulfillment Workflow
+
+```mermaid
+graph TD
+    A[Order Placed] --> B[Payment Verification]
+    B --> C{Payment OK?}
+    C -->|Yes| D[Job Assignment]
+    C -->|No| E[Payment Retry]
+    D --> F[Production]
+    F --> G[Completion Evidence]
+    G --> H{Quality Check}
+    H -->|Pass| I[Customer Delivery]
+    H -->|Fail| J[Rework]
+    J --> F
+    I --> K[Order Closed]
+```
+
+## 💰 Pricing Engine
+
+### Formula Types
+
+#### Area-Based (2D Products)
+
+```
+Base Price = Width × Length × Material Rate per SQF
+If Area ≥ 50 SQF: Apply 30% discount
+Final Price = Base Price + Add-ons
+```
+
+#### Volume-Based (3D Products)
+
+```
+Base Price = Width × Length × Height × Material Rate per Cubic Foot
+If Volume ≥ Threshold: Apply bulk discount
+Final Price = Base Price + Add-ons
+```
+
+### Add-on Services
+
+- Fixed price add-ons (e.g., $50 for express service)
+- Percentage-based add-ons (e.g., 10% for premium finish)
+- Area-based add-ons (e.g., $2/SQF for lamination)
+
+## 📊 Key Features
+
+### Customer Portal (app-web)
+
+| Feature Category       | Key Capabilities                                        |
+| ---------------------- | ------------------------------------------------------- |
+| **Account Management** | Multi-department support, User roles, Credit management |
+| **Product Catalog**    | Category browsing, Material selection, Visual previews  |
+| **Quotation System**   | Real-time pricing, Draft saving, PDF generation         |
+| **Order Management**   | Status tracking, Modification requests, History viewing |
+| **Payment Processing** | Multiple methods, Down payments, Invoice downloads      |
+| **Communication**      | In-app messaging, Email notifications, Support tickets  |
+
+### Admin Portal (app-admin)
+
+| Feature Category          | Key Capabilities                                            |
+| ------------------------- | ----------------------------------------------------------- |
+| **Dashboard**             | Real-time metrics, Revenue tracking, Pipeline visualization |
+| **Quotation Management**  | Approval workflow, Price adjustments, Bulk processing       |
+| **Order Processing**      | Payment verification, Job assignment, Status updates        |
+| **Contractor Management** | Performance tracking, Payment processing, Skill mapping     |
+| **Quality Control**       | Evidence review, Rework assignment, Satisfaction tracking   |
+| **Financial Management**  | Invoice generation, Reporting suite, Profitability analysis |
+
+### Contractor Portal
+
+| Feature Category   | Key Capabilities                                               |
+| ------------------ | -------------------------------------------------------------- |
+| **Job Management** | Assignment acceptance, Progress updates, Evidence upload       |
+| **Financial**      | Invoice submission, Payment tracking, Earning reports          |
+| **Communication**  | Issue reporting, Clarification requests, Availability calendar |
+
+## 🎯 Success Metrics
+
+### Operational Efficiency
+
+- **Quotation Generation**: < 2 minutes (70% reduction)
+- **Order Processing**: < 5 minutes per order
+- **Payment Processing**: < 24 hours for contractors
+
+### Quality Metrics
+
+- **Order Accuracy**: > 98%
+- **Customer Satisfaction**: > 4.5/5
+- **Rework Rate**: < 2%
 
 ### Technical Performance
-- API response time: <200ms
-- System uptime: >99.9%
-- Authentication success rate: >99.5%
-- Security incidents: 0
 
-### Platform Growth
-- User registration growth rate
-- Active user retention
-- Feature adoption rates
-- System scalability metrics
+- **API Response Time**: < 300ms (95th percentile)
+- **Page Load Time**: < 2 seconds
+- **System Uptime**: > 99.9%
+- **Concurrent Users**: 1,000+
 
-## Technology Stack
+### Business Growth
 
-### Frontend Applications
-- **Web App**: Next.js with TypeScript
-- **Admin Portal**: Next.js with TypeScript
-- **Mobile App**: React Native with Expo
+- **Order Volume Capacity**: 100,000/month
+- **Revenue Processing**: $10M+/month
+- **Contractor Network**: 500+ active
 
-### Backend Platform
-- **API**: Express.js with TypeScript
-- **Database**: SQLite (development), PostgreSQL (production)
-- **Authentication**: JWT tokens
-- **Validation**: Express Validator
-- **File Upload**: Multer for profile photos
+## 🔒 Security & Compliance
 
-### Shared Infrastructure
-- **Types**: Centralized TypeScript types via @app/shared-types
-- **Styling**: Tailwind CSS
-- **Development**: Bun for package management
-- **Deployment**: Docker containerization ready
+### Security Measures
 
-## Development Workflow
+- **Authentication**: JWT with refresh tokens
+- **Encryption**: TLS 1.3 in transit, AES-256 at rest
+- **Access Control**: Role-based permissions (RBAC)
+- **Monitoring**: Real-time threat detection, SIEM integration
 
-### Getting Started
-1. Clone the repository
-2. Install dependencies with `bun install`
-3. Set up environment variables
-4. Run database migrations
-5. Start development servers
+### Compliance
 
-### Adding Features
-1. Define types in shared-types package
-2. Implement backend API endpoints
-3. Add frontend components
-4. Update mobile app if needed
-5. Test across all platforms
+- **PCI DSS Level 1**: Payment card security
+- **GDPR**: EU data protection
+- **CCPA**: California privacy rights
+- **SOC 2 Type II**: Security certification
 
-This template provides a clean, scalable foundation that can be extended for specific business needs while maintaining consistency across web and mobile platforms.
+## 🚀 Implementation Features
+
+### Completed ✅
+- User authentication and authorization
+- Basic order management
+- Quotation system
+- Payment integration
+
+### In Progress 🔄
+- Contractor portal
+- Quality control workflows
+- Financial reporting
+- Real-time updates
+
+### Planned 📋
+- Performance optimization
+- Advanced analytics
+- Mobile app development
+- AI-powered pricing
+- Multi-region deployment
+- Enterprise features
+- API marketplace
+- White-label options
+
+## 🔧 Development Guidelines
+
+### Code Organization
+
+#### Backend (app-be)
+```
+src/
+├── app.ts              # Express app configuration
+├── server.ts           # Server entry point
+├── config/             # Configuration files
+│   ├── jwt.ts         # JWT configuration
+│   └── swagger.ts     # API documentation config
+├── controllers/        # Request handlers
+│   ├── auth/          # Authentication controllers
+│   └── user/          # User management controllers
+├── services/           # Business logic layer
+│   ├── auth/          # Authentication services
+│   └── user/          # User services
+├── middleware/         # Express middleware
+│   ├── auth/          # Auth middleware (authenticate, authorize)
+│   ├── error/         # Error handling
+│   └── validation/    # Request validation
+│       └── schemas/   # Validation schemas
+├── routes/             # API route definitions
+│   └── api/
+│       └── v1/        # Version 1 API routes
+├── database/           # Database related
+│   ├── client.ts      # Prisma client
+│   └── seed.ts        # Database seeding
+└── utils/              # Helper functions
+    ├── auth.ts        # Auth utilities
+    └── email.ts       # Email utilities
+```
+
+#### Frontend (app-web, app-admin)
+```
+src/
+├── app/                # Next.js app directory
+│   ├── (auth)/        # Authentication pages
+│   ├── api/           # API routes
+│   ├── layout.tsx     # Root layout
+│   └── page.tsx       # Home page
+├── contexts/           # React contexts
+│   └── AuthContext.tsx # Authentication context
+├── services/           # API client services
+│   ├── api.ts         # Base API client
+│   └── authService.ts # Auth API calls
+└── middleware.ts       # Next.js middleware
+```
+
+#### Shared Types (packages/shared-types)
+```
+src/
+├── index.ts            # Main export file
+├── enums/              # Enum definitions
+│   └── index.ts       # Role, Status enums
+├── models/             # Database models
+│   ├── user.ts        # User model
+│   └── schema.prisma  # Prisma schema
+└── types/              # TypeScript types
+    ├── auth.ts        # Authentication types
+    ├── common.ts      # Common/shared types
+    ├── customer.ts    # Customer types
+    ├── order.ts       # Order types
+    ├── product.ts     # Product types
+    ├── quotation.ts   # Quotation types
+    ├── invoice.ts     # Invoice types
+    └── refund.ts      # Refund types
+```
+
+### API Design Principles
+
+- RESTful architecture
+- Consistent naming conventions
+- Comprehensive error handling
+- Version control (v1, v2)
+- OpenAPI 3.0 documentation
+
+### Testing Strategy
+
+- Unit tests: > 80% coverage
+- Integration tests: All API endpoints
+- E2E tests: Critical user journeys
+- Performance tests: Load and stress testing
+
+## 📚 Additional Resources
+
+### Documentation
+
+- [API Documentation](./docs/api/README.md)
+- [Database Schema](./docs/database/schema.md)
+- [Deployment Guide](./docs/deployment/README.md)
+- [User Manuals](./docs/user-guides/)

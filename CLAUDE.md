@@ -4,21 +4,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-App Template is a modern full-stack application template with authentication and user management, featuring three user tiers:
+ArtSign is a comprehensive custom manufacturing order management system designed to streamline the entire lifecycle of custom signage and printing orders. The platform serves as a centralized hub connecting customers, business owners, and contractors in a seamless workflow.
 
-- **Users**: Standard users with basic access
-- **Managers**: Middle-level users with management capabilities  
-- **Super Admins**: Platform administrators with full system access
-
-The template provides a solid foundation for building web and mobile applications with user authentication, profile management, and role-based access control.
+### Key Objectives
+- Automate quotation generation with dynamic pricing calculations
+- Enable real-time order tracking and status updates
+- Facilitate efficient job assignment and contractor management
+- Ensure quality control through systematic approval workflows
+- Provide comprehensive financial tracking and reporting
+- Support multi-department customer organizations
 
 ## Repository Structure
 
 - `app-be/` - Backend API (Express.js + TypeScript + Prisma)
-- `app-web/` - Customer web portal (Next.js)
-- `app-admin/` - Admin web portal (Next.js)
-- `app-mobile/` - Mobile app (React Native/Expo)
+- `app-web/` - Customer e-commerce portal (Next.js)
+- `app-admin/` - Administrative dashboard (Next.js)
+- `app-mobile/` - Mobile app (React Native/Expo) - Future plan, not for now
 - `packages/shared-types/` - Shared TypeScript types for all apps
+- `artSign-admin/` - Legacy admin portal (to be migrated)
+- `artSign-customer/` - Legacy customer portal (to be migrated)
 
 ## Common Development Commands
 
@@ -75,7 +79,7 @@ See [packages/shared-types/README.md](packages/shared-types/README.md) for detai
 
 ## Architecture Notes
 
-### Backend Architecture
+### Backend Architecture (app-be)
 
 - RESTful API built with Express.js and TypeScript
 - Prisma ORM for database operations
@@ -83,14 +87,83 @@ See [packages/shared-types/README.md](packages/shared-types/README.md) for detai
 - Modular structure: controllers, services, models, middleware
 - API versioning (v1) in routes
 
-### Frontend Architecture
+```
+src/
+├── app.ts              # Express app configuration
+├── server.ts           # Server entry point
+├── config/             # Configuration files
+│   ├── jwt.ts         # JWT configuration
+│   └── swagger.ts     # API documentation config
+├── controllers/        # Request handlers
+│   ├── auth/          # Authentication controllers
+│   └── user/          # User management controllers
+├── services/           # Business logic layer
+│   ├── auth/          # Authentication services
+│   └── user/          # User services
+├── middleware/         # Express middleware
+│   ├── auth/          # Auth middleware (authenticate, authorize)
+│   ├── error/         # Error handling
+│   └── validation/    # Request validation
+│       └── schemas/   # Validation schemas
+├── routes/             # API route definitions
+│   └── api/
+│       └── v1/        # Version 1 API routes
+├── database/           # Database related
+│   ├── client.ts      # Prisma client
+│   └── seed.ts        # Database seeding
+└── utils/              # Helper functions
+    ├── auth.ts        # Auth utilities
+    └── email.ts       # Email utilities
+```
+
+### Frontend Architecture (app-web, app-admin)
 
 - Next.js 15+ with App Router
 - Server-side rendering and API routes
 - Tailwind CSS for styling
 - TypeScript for type safety
 
-### Mobile Architecture
+```
+src/
+├── app/                # Next.js app directory
+│   ├── (auth)/        # Authentication pages
+│   ├── api/           # API routes
+│   ├── layout.tsx     # Root layout
+│   └── page.tsx       # Home page
+├── contexts/           # React contexts
+│   └── AuthContext.tsx # Authentication context
+├── services/           # API client services
+│   ├── api.ts         # Base API client
+│   └── authService.ts # Auth API calls
+└── middleware.ts       # Next.js middleware
+```
+
+### Shared Types Architecture (packages/shared-types)
+
+- Centralized TypeScript definitions
+- Shared enums, types, and interfaces
+- Prisma schema for database models
+
+```
+src/
+├── index.ts            # Main export file
+├── enums/              # Enum definitions
+│   └── index.ts       # Role, Status enums
+├── models/             # Database models
+│   ├── user.ts        # User model
+│   └── schema.prisma  # Prisma schema
+└── types/              # TypeScript types
+    ├── auth.ts        # Authentication types
+    ├── common.ts      # Common/shared types
+    ├── customer.ts    # Customer types
+    ├── order.ts       # Order types
+    ├── product.ts     # Product types
+    ├── quotation.ts   # Quotation types
+    ├── invoice.ts     # Invoice types
+    └── refund.ts      # Refund types
+```
+
+### Mobile Architecture (app-mobile)
 
 - Expo SDK with React Native
 - Tab-based navigation
@@ -101,15 +174,115 @@ See [packages/shared-types/README.md](packages/shared-types/README.md) for detai
 
 - Authentication: JWT tokens shared between web and mobile
 - API: All clients communicate with app-be backend
-- Database: SQLite (dev)
+- Database: PostgreSQL (production), SQLite (development)
 - Shared Types: All apps use @app/shared-types for TypeScript definitions
+
+## User Roles and Permissions
+
+### Customer Roles
+- **Customer Admin**: Full access to company account
+- **Department User**: Limited to department orders
+- **Viewer**: Read-only access to orders
+
+### Internal Roles
+- **Super Admin (Eric)**: Full system access
+- **Admin**: Order and contractor management
+- **Finance Admin**: Payment and invoice access
+- **Support Agent**: Customer communication
+
+### Contractor Roles
+- **Lead Contractor**: Can assign sub-jobs
+- **Standard Contractor**: Job execution only
+
+## Core Features
+
+### Quotation System
+- Dynamic pricing engine with area/volume-based calculations
+- Material and add-on service selection
+- Bulk discount automation (30% off at 50+ SQF)
+- Admin approval workflow
+
+### Order Management
+- Real-time order tracking
+- Payment verification workflow
+- Job assignment to contractors
+- Quality control with completion evidence
+- Rework management for complaints
+
+### Financial Management
+- Invoice generation and tracking
+- Multiple payment methods (Stripe, PayPal)
+- Contractor payment processing
+- Financial reporting and analytics
 
 ## Important Considerations
 
-1. **Simple Template**: This is a clean template focused on authentication and user management fundamentals.
+1. **Migration in Progress**: Currently migrating from artSign-admin and artSign-customer to the new app-admin and app-web structure.
 
-2. **Role-based Access**: Different features and endpoints are available based on user roles (User, Manager, Super Admin).
+2. **Pricing Engine**: Complex pricing formulas based on dimensions, materials, and add-ons with automatic bulk discounts.
 
-3. **Multi-platform**: Designed to work across web, admin portal, and mobile applications.
+3. **Quality Assurance**: All completed jobs require photographic evidence before payment approval.
 
-4. **Extensible**: Built with a modular architecture that can be extended for specific business needs.
+4. **Multi-tenant Architecture**: Supports multiple departments within customer organizations.
+
+5. **Real-time Updates**: Uses Socket.io for live order status updates.
+
+## Business Rules
+
+### Pricing Rules
+- Base pricing uses per-square-foot or per-cubic-foot calculations
+- Bulk discounts apply automatically at 50+ SQF (30% discount)
+- Material prices must be updatable without code changes
+- All quotations require admin approval before customer viewing
+
+### Order Processing Rules
+- Orders require payment verification before job assignment
+- Down payments must be minimum 50% of total order value
+- Jobs can only be assigned to approved contractors
+- Customer complaints trigger mandatory rework process
+
+### Quality Assurance Rules
+- All completed jobs require photographic evidence
+- Admin must review completion evidence before approving payment
+- Rework requests must be completed within 48 hours
+- Customer satisfaction verification required for order closure
+
+## Implementation Status
+
+### Completed Features ✅
+- User authentication and authorization
+- Basic order management
+- Quotation system
+- Payment integration
+
+### In Progress Features 🔄
+- Contractor portal
+- Quality control workflows
+- Financial reporting
+- Real-time updates
+
+### Planned Features 📋
+- Performance optimization
+- Advanced analytics
+- Mobile app development
+- AI-powered pricing
+- Multi-region deployment
+- Enterprise features
+- API marketplace
+- White-label options
+
+## API Endpoints Structure
+
+The backend API follows RESTful conventions with versioning:
+- Base URL: `/api/v1`
+- Authentication: Bearer token in Authorization header
+- Content-Type: application/json
+
+Key endpoint patterns:
+- `/api/v1/auth/*` - Authentication endpoints
+- `/api/v1/users/*` - User management
+- `/api/v1/products/*` - Product catalog
+- `/api/v1/orders/*` - Order management
+- `/api/v1/quotations/*` - Quotation system
+- `/api/v1/invoices/*` - Financial documents
+- `/api/v1/contractors/*` - Contractor management

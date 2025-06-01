@@ -1,12 +1,12 @@
-// This is the main Prisma schema file for ArtSign project
-// Used by app-be for the backend API
+// This is the shared Prisma schema file for ArtSign project
+// Used by app-be for the main backend API
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -19,8 +19,8 @@ model User {
   firstName              String
   lastName               String
   phone                  String?
-  role                   String    @default("CUSTOMER") // CUSTOMER, CONTRACTOR, SALESMAN, MANAGER, ADMIN, SUPER_ADMIN
-  status                 String    @default("PENDING_VERIFICATION") // ACTIVE, INACTIVE, SUSPENDED, PENDING_VERIFICATION
+  role                   Role      @default(CUSTOMER)
+  status                 UserStatus @default(PENDING_VERIFICATION)
   refreshToken           String?
   lastLoginAt            DateTime?
   emailVerificationToken String?
@@ -34,13 +34,12 @@ model User {
   gender                 String?
   imageUrl               String?
   language               String?   @default("en")
-  currency               String?   @default("SGD")
+  currency               String?   @default("USD")
   
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 
   // Relations
-  customer               Customer?
   addresses              Address[]
   orders                 Order[]
   paymentMethods         PaymentMethod[]
@@ -64,20 +63,20 @@ model Customer {
   // Business fields
   companyName       String?
   taxId             String?
-  customerType      String    @default("INDIVIDUAL") // INDIVIDUAL, CORPORATE
+  customerType      CustomerType @default(INDIVIDUAL)
   
   // Financial
   creditLimit       Float     @default(0)
   creditUsed        Float     @default(0)
   totalSpent        Float     @default(0)
-  paymentTerms      String    @default("IMMEDIATE") // IMMEDIATE, NET_30, NET_60
+  paymentTerms      PaymentTerms @default(IMMEDIATE)
   
   // Contact
   contactPerson     String?
   salesman          String?
   
   // Status
-  customerStatus    String    @default("ACTIVE") // ACTIVE, INACTIVE
+  customerStatus    CustomerStatus @default(ACTIVE)
   notes             String?
   
   createdAt         DateTime  @default(now())
@@ -123,17 +122,17 @@ model Product {
   lowStockThreshold        Int       @default(10)
   
   // Status
-  status                   String    @default("ACTIVE") // ACTIVE, INACTIVE, OUT_OF_STOCK
+  status                   ProductStatus @default(ACTIVE)
   featured                 Boolean   @default(false)
   
   // Media
-  imageUrls                String    @default("[]") // JSON array
+  imageUrls                String[]
   
   // Specifications
-  specifications           String?   @default("{}") // JSON
-  features                 String    @default("[]") // JSON array
-  colorOptions             String?   @default("[]") // JSON array
-  sizeOptions              String?   @default("[]") // JSON array
+  specifications           Json?     @default("{}")
+  features                 Json      @default("[]")
+  colorOptions             Json?     @default("[]")
+  sizeOptions              Json?     @default("[]")
   
   // Metrics
   reviewsCount             Int       @default(0)
@@ -161,20 +160,20 @@ model Service {
   description            String
   price                  Float
   per                    String    // per unit, per sqft, etc
-  category               String    // SIGNAGE, BANNERS, VEHICLE_WRAPS, WINDOW_GRAPHICS, PROMOTIONAL_ITEMS
-  status                 String    @default("ACTIVE") // ACTIVE, INACTIVE, COMING_SOON
+  category               ServiceCategory
+  status                 ServiceStatus @default(ACTIVE)
   
   // Media
   imageUrl               String
   
   // Features
-  features               String    @default("[]") // JSON array
+  features               String    @default("[]")
   isFeatured             Boolean   @default(false)
   
   // Ratings
   averageRating          Float?    @default(0)
   reviewsCount           Int       @default(0)
-  ratingStats            String?   @default("{}") // JSON
+  ratingStats            Json?     @default("{}")
   
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
@@ -196,8 +195,8 @@ model ArtworkRequirement {
   title       String
   description String
   isRequired  Boolean  @default(true)
-  exampleUrls String   @default("[]") // JSON array
-  fileTypes   String   @default("[\"jpg\", \"jpeg\", \"png\", \"pdf\", \"ai\", \"eps\", \"svg\"]") // JSON array
+  exampleUrls String   @default("[]")
+  fileTypes   String   @default("[\"jpg\", \"jpeg\", \"png\", \"pdf\", \"ai\", \"eps\", \"svg\"]")
 
   @@index([serviceId])
 }
@@ -209,7 +208,7 @@ model ServiceSpecification {
   name        String
   description String?
   isRequired  Boolean  @default(false)
-  options     String   @default("[]") // JSON array
+  options     String   @default("[]")
 
   @@index([serviceId])
 }
@@ -223,8 +222,8 @@ model Order {
   user              User      @relation(fields: [userId], references: [id])
   
   // Status
-  status            String    @default("PENDING") // PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED
-  paymentStatus     String    @default("PENDING") // PENDING, PAID, FAILED, REFUNDED, PARTIALLY_REFUNDED
+  status            OrderStatus @default(PENDING)
+  paymentStatus     PaymentStatus @default(PENDING)
   
   // Amounts
   subtotal          Float
@@ -234,7 +233,7 @@ model Order {
   totalAmount       Float
   
   // Shipping
-  shippingMethod    String    @default("STANDARD") // STANDARD, EXPRESS, NEXT_DAY, PICKUP
+  shippingMethod    ShippingMethod @default(STANDARD)
   trackingNumber    String?
   shippingAddressId String?
   shippingAddress   Address?  @relation("OrderShippingAddress", fields: [shippingAddressId], references: [id])
@@ -274,7 +273,7 @@ model OrderItem {
   totalPrice      Float
   
   // Customization
-  specifications  String?   // JSON - Custom specifications for this order
+  specifications  Json?     // Custom specifications for this order
   
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -297,7 +296,7 @@ model Quotation {
   salesman        String?
   
   // Status
-  status          String    @default("DRAFT") // DRAFT, SENT, PENDING, APPROVED, REJECTED, ACCEPTED, EXPIRED
+  status          QuotationStatus @default(DRAFT)
   validUntil      DateTime
   
   // Amounts
@@ -330,7 +329,7 @@ model QuotationItem {
   quantity        Int
   unitPrice       Float
   totalPrice      Float
-  specifications  String?   // JSON
+  specifications  Json?
 
   @@index([quotationId])
   @@index([productId])
@@ -347,7 +346,7 @@ model Invoice {
   user            User      @relation(fields: [userId], references: [id])
   
   // Status
-  status          String    @default("UNPAID") // PAID, UNPAID, OVERDUE
+  status          InvoiceStatus @default(UNPAID)
   
   // Amounts
   amount          Float
@@ -398,13 +397,13 @@ model RefundRequest {
   user            User      @relation(fields: [userId], references: [id])
   
   // Details
-  products        String    // JSON - Array of products to refund
+  products        Json      // Array of products to refund
   refundAmount    Float
   refundMethod    String
   refundCard      String?
   
   // Status
-  status          String    @default("PENDING") // PENDING, APPROVED, REJECTED, PROCESSED
+  status          RefundStatus @default(PENDING)
   
   // Notes
   reason          String
@@ -440,7 +439,7 @@ model Review {
   
   // Metadata
   helpful    Int       @default(0)
-  status     String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  status     ReviewStatus @default(PENDING)
   
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
@@ -490,11 +489,118 @@ model AuditLog {
   action    String
   entity    String
   entityId  String?
-  changes   String?  // JSON
+  changes   Json?
   ipAddress String?
   userAgent String?
   createdAt DateTime @default(now())
 
   @@index([userId])
   @@index([entity, entityId])
+}
+
+// ==================== ENUMS ====================
+
+enum Role {
+  CUSTOMER
+  CONTRACTOR
+  SALESMAN
+  MANAGER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+enum CustomerType {
+  INDIVIDUAL
+  CORPORATE
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PaymentTerms {
+  IMMEDIATE
+  NET_30
+  NET_60
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  OUT_OF_STOCK
+}
+
+enum ServiceCategory {
+  SIGNAGE
+  BANNERS
+  VEHICLE_WRAPS
+  WINDOW_GRAPHICS
+  PROMOTIONAL_ITEMS
+}
+
+enum ServiceStatus {
+  ACTIVE
+  INACTIVE
+  COMING_SOON
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum ShippingMethod {
+  STANDARD
+  EXPRESS
+  NEXT_DAY
+  PICKUP
+}
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  PENDING
+  APPROVED
+  REJECTED
+  ACCEPTED
+  EXPIRED
+}
+
+enum InvoiceStatus {
+  PAID
+  UNPAID
+  OVERDUE
+}
+
+enum RefundStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PROCESSED
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
